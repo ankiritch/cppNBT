@@ -31,7 +31,7 @@ class nbt {
         void writeNBT();
         void setBuffer(std::list<char> newBuffer);
 
-        // all possible data types
+        //All possible data types, contain name, payload, and tag (LIST: datatypeTag)
         //use vector later to store data
         struct BYTE {
             std::string name;
@@ -81,6 +81,7 @@ class nbt {
             const char TAG{0x08};
         };
 
+        //Forward declaration to use in NBT_DATATYPES
         struct LIST;
         struct COMPOUND;
         struct INT_ARRAY;
