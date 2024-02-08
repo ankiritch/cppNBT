@@ -10,13 +10,14 @@ nbt::nbt(std::string path, std::ios::openmode mode) {
     outfile.open(path, mode);
 }
 
-void nbt::writeNBT() {
-    
+void nbt::writeNBT() {  
     for (char c : buffer) {
         outfile << c;
     }
 }
 
-void nbt::setBuffer(std::list<char> newBuffer) {
-    buffer = newBuffer;
+void nbt::setBuffer() {
+    for (NBT_DATATYPES n : nbt_data) {
+        // add tag, name length, name and payload
+    }
 }

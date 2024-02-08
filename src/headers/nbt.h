@@ -29,7 +29,7 @@ class nbt {
         nbt(std::string path, std::ios::openmode mode);
         
         void writeNBT();
-        void setBuffer(std::list<char> newBuffer);
+        void setBuffer();
 
         //All possible data types, contain name, payload, and tag (LIST: datatypeTag)
         //use vector later to store data
@@ -114,6 +114,7 @@ class nbt {
 
     private:
         std::ofstream outfile;
+        std::list<NBT_DATATYPES> nbt_data;
         std::list<char> buffer;
 };
 
