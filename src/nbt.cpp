@@ -16,8 +16,18 @@ void nbt::writeNBT() {
     }
 }
 
-void nbt::setBuffer() {
-    for (NBT_DATATYPES n : nbt_data) {
-        // add tag, name length, name and payload
+std::list<char> nbt::nbtDataToBinaryArray(NBT_DATATYPES nbtData) {
+    std::list<char> buffer;
+    
+    //Compound, list, ... -> Call recursively, insert returned buffer arrays into buffer and create header
+    //Other -> Return buffer array
+
+
+    return buffer;
+}
+
+void nbt::bufferNbtData(std::list<NBT_DATATYPES> nbtData) {
+    for (NBT_DATATYPES n : nbtData) {
+        
     }
 }

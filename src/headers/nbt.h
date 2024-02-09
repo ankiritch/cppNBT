@@ -28,60 +28,19 @@ class nbt {
 
         nbt(std::string path, std::ios::openmode mode);
         
-        void writeNBT();
-        void setBuffer();
 
-        //All possible data types, contain name, payload, and tag (LIST: datatypeTag)
+        //All possible data types, contain name, payload, and tag (lists: datatypeTag)
         //use vector later to store data
-        struct BYTE {
-            std::string name;
-            uint8_t payload;
-            const char TAG{0x01};
-        };
-
-        struct SHORT {
-            std::string name;
-            int16_t payload;
-            const char TAG{0x02};
-        };
-
-        struct INT {
-            std::string name;
-            int32_t payload;
-            const char TAG{0x03};
-        };
-
-        struct LONG {
-            std::string name;
-            int64_t payload;
-            const char TAG{0x04};
-        };
-
-        struct FLOAT {
-            std::string name;
-            float payload;
-            const char TAG{0x05};
-        };
-
-        struct DOUBLE {
-            std::string name;
-            double payload;
-            const char TAG{0x06};
-        };
-
-        struct BYTE_ARRAY {
-            std::string name;
-            std::list<uint8_t> payload;
-            const char TAG{0x07};
-        };
-
-        struct STRING {
-            std::string name;
-            std::string payload;
-            const char TAG{0x08};
-        };
 
         //Forward declaration to use in NBT_DATATYPES
+        struct BYTE;
+        struct SHORT;
+        struct INT;
+        struct LONG;
+        struct FLOAT;
+        struct DOUBLE;
+        struct BYTE_ARRAY;
+        struct STRING;
         struct LIST;
         struct COMPOUND;
         struct INT_ARRAY;
@@ -89,27 +48,203 @@ class nbt {
 
         using NBT_DATATYPES = std::variant<BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY>;
 
+
+        void bufferNbtData(std::list<NBT_DATATYPES> nbtData);
+        void writeNBT();
+        std::list<char> nbtDataToBinaryArray(NBT_DATATYPES nbtData);
+
+        struct BYTE {
+            std::string name;
+            uint8_t payload;
+            const char TAG{0x01};
+
+            std::string getName() {
+                return name;
+            }
+            uint8_t getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+
+        struct SHORT {
+            std::string name;
+            int16_t payload;
+            const char TAG{0x02};
+
+            std::string getName() {
+                return name;
+            }
+            int16_t getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct INT {
+            std::string name;
+            int32_t payload;
+            const char TAG{0x03};
+
+            std::string getName() {
+                return name;
+            }
+            int32_t getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct LONG {
+            std::string name;
+            int64_t payload;
+            const char TAG{0x04};
+
+            std::string getName() {
+                return name;
+            }
+            int64_t getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct FLOAT {
+            std::string name;
+            float payload;
+            const char TAG{0x05};
+
+            std::string getName() {
+                return name;
+            }
+            float getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct DOUBLE {
+            std::string name;
+            double payload;
+            const char TAG{0x06};
+
+            std::string getName() {
+                return name;
+            }
+            double getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct BYTE_ARRAY {
+            std::string name;
+            std::list<uint8_t> payload;
+            const char TAG{0x07};
+
+            std::string getName() {
+                return name;
+            }
+            std::list<uint8_t> getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
+        struct STRING {
+            std::string name;
+            std::string payload;
+            const char TAG{0x08};
+
+            std::string getName() {
+                return name;
+            }
+            std::string getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
+        };
+
         struct LIST {
             std::string name;
             char datatypeTag;
             std::list<NBT_DATATYPES> payload;
             const char TAG{0x09};
+
+            std::string getName() {
+                return name;
+            }
+            std::list<NBT_DATATYPES> getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
         };
 
         struct COMPOUND {
             std::string name;
             std::list<NBT_DATATYPES> payload;
             const char TAG{0x0a};
+
+            std::string getName() {
+                return name;
+            }
+            std::list<NBT_DATATYPES> getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
         };
 
         struct INT_ARRAY {
             std::string name;
-            std::list<nbt::INT> payload;
+            std::list<int32_t> payload;
+            const char TAG{0x0b};
+
+            std::string getName() {
+                return name;
+            }
+            std::list<int32_t> getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
         };
 
         struct LONG_ARRAY {
             std::string name;
-            std::list<nbt::LONG> payload;
+            std::list<int64_t> payload;
+            const char TAG{0x0c};
+
+            std::string getName() {
+                return name;
+            }
+            std::list<int64_t> getPayload() {
+                return payload;
+            }
+            const char getTag() {
+                return TAG;
+            }
         };
 
     private:
