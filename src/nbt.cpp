@@ -28,11 +28,11 @@ template <typename T>
 struct nbtVisitor {
     nbtVector toReturn;
 
-    nbtVector operator()(T nbtData) {
+    nbtVector operator()(auto nbtData) {
         toReturn.push_back(nbtData.TAG);
         toReturn.push_back(nbtData.name);
 
-        if (nbtData.TAG == ntb::TAG_List) {
+        if (nbtData.TAG == nbt::TAG_List) {
             toReturn.push_back(nbtData.datatypeTag);
         }
 
@@ -123,12 +123,12 @@ struct nbtVisitor {
 
 };
 
+
 void nbt::pushNumber(auto payload, std::list<char> &buffer) {
     for (int i = (sizeof(payload)-1); i >= 0; i--) {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wconversion"
         buffer.push_back((payload >> 8*i) & 0xFF);
-        std::cout << payload << " : " << ((payload >> 8*i) & 0xFF) << std::endl;
         #pragma GCC diagnostic pop
     }
 
