@@ -17,7 +17,7 @@ int main() {
 
     nbt::INT myInt;
     myInt.name = "MyIntName";
-    myInt.payload = (int32_t) 1337;
+    myInt.payload = 1337;
 
     std::list<char> buffer;
     buffer.push_back(0x0a);
@@ -30,12 +30,21 @@ int main() {
         buffer.push_back(c);
     }
 
-    buffer.push_back(0x00);
     
+    myInt.payload = 89;
+    myInt.name = "AnotherInt";
+
+    std::list<char> t_buffer = n.nbtDataToWritableArray(myInt);
+
+    for (char c : t_buffer) {
+        buffer.push_back(c);
+    }
+
+    buffer.push_back(0x00);
 
     n.writeNBT(buffer);
 
-    getch();
+    //getch();
     return 0;
 
 }
