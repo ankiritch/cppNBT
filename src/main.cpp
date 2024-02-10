@@ -15,29 +15,25 @@ int main() {
 
     nbt n(path, mode);
 
-    //std::list<char> buffer = {n.TAG_Compound, 0, 4, 'n', 'a', 'm', 'e', n.TAG_End};
+    nbt::INT myInt;
+    myInt.name = "MyIntName";
+    myInt.payload = (int32_t) 1337;
 
-    //n.setBuffer();
+    std::list<char> buffer;
+    buffer.push_back(0x0a);
+    buffer.push_back(0x00);
+    buffer.push_back(0x00);
 
-    //n.writeNBT();
+    std::list<char> s_buffer = n.nbtDataToWritableArray(myInt);
 
-    nbt::COMPOUND root;
-    root.name = "root";
+    for (char c : s_buffer) {
+        buffer.push_back(c);
+    }
 
-    nbt::BYTE aByte;
-    aByte.name = "aByte";
-    aByte.payload = 'b';
+    buffer.push_back(0x00);
+    
 
-    nbt::STRING aString;
-    aString.name = "aString";
-    aString.payload = "Hello World!";
-
-    root.payload.push_back(aByte);
-    root.payload.push_back(aString);
-
-    std::list<nbt::NBT_DATATYPES> localData;
-
-    localData.push_back(root);
+    n.writeNBT(buffer);
 
     getch();
     return 0;
