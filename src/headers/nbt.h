@@ -52,7 +52,7 @@ class nbt {
 
         using NBT_DATATYPES = std::variant<BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY>;
         using NBT_SINGLE_PAYLOAD_DATATYPES = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::string>;
-        using NBT_MULTI_PAYLOAD_DATATYPES = std::variant<std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::string, std::list<NBT_DATATYPES>>;
+        using NBT_MULTI_PAYLOAD_DATATYPES = std::variant<std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NBT_DATATYPES>>;
         using NBT_PAYLOAD_DATATYPES = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::string, std::list<NBT_DATATYPES>>;
 
 

@@ -6,6 +6,7 @@
 #include <variant>
 #include <vector>
 #include <typeinfo>
+#include <any>
 
 nbt::nbt(std::string path, std::ios::openmode mode) {
     outfile.open(path, mode);
@@ -17,12 +18,8 @@ void nbt::writeNBT(std::list<char> buffer) {
     }
 }
 
-
-
-
-
-
-using nbtVector = std::vector<std::variant<std::string, char, nbt::NBT_SINGLE_PAYLOAD_DATATYPES, nbt::NBT_MULTI_PAYLOAD_DATATYPES>>;
+using NBT_VECTOR_VARIANT = std::variant<std::string, char, nbt::NBT_SINGLE_PAYLOAD_DATATYPES, nbt::NBT_MULTI_PAYLOAD_DATATYPES>;
+using nbtVector = std::vector<NBT_VECTOR_VARIANT>;
 
 template <typename T>
 struct nbtVisitor {
@@ -57,8 +54,7 @@ std::list<char> nbt::nbtDataToWritableArray(NBT_DATATYPES nbtData) {
     std::list<char> buffer;
 
     //get nbt data as easily accessible vector
-    nbtVector data = std::visit(nbtVisitor<decltype(nbtData)>{}, nbtData);
-    
+    nbtVector data = std::visit(nbtVisitor<decltype(nbtData)>{}, nbtData);  
     
     //Compound, list, ... -> Call recursively, insert returned buffer arrays nbtInto buffer and create header
     //Other -> Return buffer
@@ -66,19 +62,20 @@ std::list<char> nbt::nbtDataToWritableArray(NBT_DATATYPES nbtData) {
     char currentTag{std::get<char>(data[0])};
     std::string name = std::get<std::string>(data[1]);
 
+    //Push header (tag, name length, name), all dataypes have this
+    buffer.push_back(currentTag);
+    pushNumber((int16_t)name.size(), buffer); //name length size should be 2B
+
+    for (char c : name) {
+        buffer.push_back(c);
+    }
+
+
+    //Single value data types
     if ((currentTag <= 6 || currentTag == 8) && currentTag != 0) {
         //return header + payload as binary
 
-        //Pushheader
-        buffer.push_back(currentTag);
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wconversion"
-        pushNumber((int16_t)name.size(), buffer); //name length size should be 2B
-        #pragma GCC diagnostic pop
-        for (char c : name) {
-            buffer.push_back(c);
-        }
-
+        
         //Push payload     
 
         NBT_SINGLE_PAYLOAD_DATATYPES payload = std::get<NBT_SINGLE_PAYLOAD_DATATYPES>(data[2]);
@@ -124,8 +121,28 @@ std::list<char> nbt::nbtDataToWritableArray(NBT_DATATYPES nbtData) {
         }
 
 
-    } else {
-        //this header + call on each direct child
+    } else if (currentTag == 0x0a) { //compound
+
+        //Get payload as one of the NBT_VECTOR_VARIANT types
+        NBT_MULTI_PAYLOAD_DATATYPES unconvertedPayload = std::get<NBT_MULTI_PAYLOAD_DATATYPES>(data[2]);
+        //Get payload as one of the NBT_MULTI_PAYLOAD_DATATYPES types
+        std::list<NBT_DATATYPES> payload = std::get<std::list<NBT_DATATYPES>>(unconvertedPayload);
+        std::list<char> compoundBuffer;
+
+        // NBT_MULTI_PAYLOAD_DATATYPES payload = std::visit([](auto&& value) -> decltype(value) {
+        //     return value;
+        // }, data[2]);
+        for (NBT_DATATYPES d : payload) {
+            compoundBuffer = nbtDataToWritableArray(d);
+
+            for (char c : compoundBuffer) {
+                buffer.push_back(c);
+            }
+        }
+
+        //End compound
+        buffer.push_back(0x00);
+
     }
 
     return buffer;

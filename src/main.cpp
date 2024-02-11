@@ -15,32 +15,29 @@ int main() {
 
     nbt n(path, mode);
 
+    nbt::COMPOUND root;
+    root.name = "root";
+
     nbt::INT myInt;
     myInt.name = "MyIntName";
     myInt.payload = 1337;
 
+    nbt::COMPOUND sCompound;
+    sCompound.name = "sCompound";
+    sCompound.payload.push_back(myInt);
+
+    root.payload.push_back(myInt);
+    root.payload.push_back(sCompound);
+
     std::list<char> buffer;
-    buffer.push_back(0x0a);
-    buffer.push_back(0x00);
-    buffer.push_back(0x00);
+    // buffer.push_back(0x0a);
+    // buffer.push_back(0x00);
+    // buffer.push_back(0x00);
 
-    std::list<char> s_buffer = n.nbtDataToWritableArray(myInt);
 
-    for (char c : s_buffer) {
-        buffer.push_back(c);
-    }
+    buffer = n.nbtDataToWritableArray(root);
 
-    
-    myInt.payload = 89;
-    myInt.name = "AnotherInt";
-
-    std::list<char> t_buffer = n.nbtDataToWritableArray(myInt);
-
-    for (char c : t_buffer) {
-        buffer.push_back(c);
-    }
-
-    buffer.push_back(0x00);
+    // buffer.push_back(0x00);
 
     n.writeNBT(buffer);
 
