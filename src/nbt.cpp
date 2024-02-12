@@ -8,6 +8,206 @@
 #include <typeinfo>
 #include <any>
 
+nbt::NbtData::NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg) {
+    if (!isCorrectType(typeArg, valueArg)) {
+        throw std::invalid_argument("Invalid type");
+    }
+    type = typeArg;
+    name = nameArg;
+    if (listTypeArg != NbtType::LIST) {
+        payload = Payload(valueArg);
+    } else {
+        payload = Payload(valueArg, listTypeArg);
+    }
+    setTag(type);
+}
+
+void nbt::NbtData::setTag(NbtType typeArg) {
+    switch (typeArg) {
+        case NbtType::BYTE:
+            tag = TAG_Byte;
+            break;
+        case NbtType::SHORT:
+            tag = TAG_Short;
+            break;
+        case NbtType::INT:
+            tag = TAG_Int;
+            break;
+        case NbtType::LONG:
+            tag = TAG_Long;
+            break;
+        case NbtType::FLOAT:
+            tag = TAG_Float;
+            break;
+        case NbtType::DOUBLE:
+            tag = TAG_Double;
+            break;
+        case NbtType::BYTE_ARRAY:
+            tag = TAG_Byte_Array;
+            break;
+        case NbtType::STRING:
+            tag = TAG_String;
+            break;
+        case NbtType::LIST:
+            tag = TAG_List;
+            break;
+        case NbtType::COMPOUND:
+            tag = TAG_Compound;
+            break;
+        case NbtType::INT_ARRAY:
+            tag = TAG_Int_Array;
+            break;
+        case NbtType::LONG_ARRAY:
+            tag = TAG_Long_Array;
+            break;
+
+        case NbtType::NONE:
+            break;
+
+    }
+}
+
+bool nbt::NbtData::convertToCorrectType(NbtType type, NbtPayloadTypes &valueArg) {
+    switch (type) {
+        case NbtType::BYTE:
+            valueArg = std::get<int8_t>(valueArg);
+            return true;
+            break;
+        case NbtType::SHORT:
+            valueArg = std::get<int16_t>(valueArg);
+            return true;
+            break;
+        case NbtType::INT:
+            valueArg = std::get<int32_t>(valueArg);
+            return true;
+            break;
+        case NbtType::LONG:
+            valueArg = std::get<int64_t>(valueArg);
+            return true;
+            break;
+        case NbtType::FLOAT:
+            valueArg = std::get<float>(valueArg);
+            return true;
+            break;
+        case NbtType::DOUBLE:
+            valueArg = std::get<double>(valueArg);
+            return true;
+            break;
+        case NbtType::BYTE_ARRAY:
+            valueArg = std::get<std::list<int8_t>>(valueArg);
+            return true;
+            break;
+        case NbtType::STRING:
+            valueArg = std::get<std::string>(valueArg);
+            return true;
+            break;
+        case NbtType::LIST:
+            valueArg = std::get<std::list<NbtData>>(valueArg); //check if all NbtData is of correct type
+            return true;
+            break;
+        case NbtType::COMPOUND:
+            valueArg = std::get<std::list<NbtData>>(valueArg);
+            return true;
+            break;
+        case NbtType::INT_ARRAY:
+            valueArg = std::get<std::list<int32_t>>(valueArg);
+            return true;
+            break;
+        case NbtType::LONG_ARRAY:
+            valueArg = std::get<std::list<int64_t>>(valueArg);
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+bool nbt::NbtData::isCorrectType(NbtType type, NbtPayloadTypes &valueArg) {
+    switch (type) {
+        case NbtType::BYTE:
+            if (std::holds_alternative<int8_t>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::SHORT:
+            if (std::holds_alternative<int16_t>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::INT:
+            if (std::holds_alternative<int32_t>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::LONG:
+            if (std::holds_alternative<int64_t>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::FLOAT:
+            if (std::holds_alternative<float>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::DOUBLE:
+            if (std::holds_alternative<double>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::BYTE_ARRAY:
+            if (std::holds_alternative<std::list<int8_t>>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::STRING:
+            if (std::holds_alternative<std::string>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::LIST:
+            if (std::holds_alternative<std::list<NbtData>>(valueArg)) { //check if all NbtData is of correct type
+                return true;
+            }
+            break;
+        case NbtType::COMPOUND:
+            if (std::holds_alternative<std::list<NbtData>>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::INT_ARRAY:
+            if (std::holds_alternative<std::list<int32_t>>(valueArg)) {
+                return true;
+            }
+            break;
+        case NbtType::LONG_ARRAY:
+            if (std::holds_alternative<std::list<int64_t>>(valueArg)) {
+                return true;
+            }
+            break;
+        default:
+            return false;
+            break;
+    }
+    convertToCorrectType(type, valueArg);
+
+    return false;
+};
+
+nbt::Payload::Payload() {}
+
+nbt::Payload::Payload(NbtPayloadTypes valueArg) {
+    value = valueArg;
+}
+
+nbt::Payload::Payload(NbtPayloadTypes valueArg, NbtType listTypeArg) {
+    value = valueArg;
+
+    if (listTypeArg == NbtType::LIST) {
+        listType = listTypeArg;
+    } 
+}
+
 nbt::nbt(std::string path, std::ios::openmode mode) {
     outfile.open(path, mode);
 }
@@ -17,6 +217,24 @@ void nbt::writeNBT(std::list<char> buffer) {
         outfile << c;
     }
 }
+
+
+
+void nbt::pushNumber(auto payload, std::list<char> &buffer) {
+    for (int i = (sizeof(payload)-1); i >= 0; i--) {
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wconversion"
+        buffer.push_back((payload >> 8*i) & 0xFF);
+        #pragma GCC diagnostic pop
+    }
+
+    return;
+}
+
+void nbt::setBuffer(std::list<char> newBuffer) {
+    buffer = newBuffer;
+}
+
 
 // using NBT_VECTOR_VARIANT = std::variant<std::string, char, nbt::NBT_SINGLE_PAYLOAD_DATATYPES, nbt::NBT_MULTI_PAYLOAD_DATATYPES>;
 // using nbtVector = std::vector<NBT_VECTOR_VARIANT>;
@@ -39,16 +257,6 @@ void nbt::writeNBT(std::list<char> buffer) {
 //     }
 // };
 
-void nbt::pushNumber(auto payload, std::list<char> &buffer) {
-    for (int i = (sizeof(payload)-1); i >= 0; i--) {
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wconversion"
-        buffer.push_back((payload >> 8*i) & 0xFF);
-        #pragma GCC diagnostic pop
-    }
-
-    return;
-}
 
 // std::list<char> nbt::nbtDataToWritableArray(NBT_DATATYPES nbtData) {
 //     std::list<char> buffer;
@@ -151,7 +359,5 @@ void nbt::pushNumber(auto payload, std::list<char> &buffer) {
 // }
 
 
-void nbt::setBuffer(std::list<char> newBuffer) {
-    buffer = newBuffer;
-}
+
 

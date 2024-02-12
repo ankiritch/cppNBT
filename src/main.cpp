@@ -17,6 +17,7 @@ int main() {
 
     nbt::NbtData myInt(nbt::NbtType::INT, "myInt", 10);
     nbt::NbtData myString(nbt::NbtType::STRING, "myString", "Hello World");
+    nbt::NbtData myByte(nbt::NbtType::BYTE, "myByte", (int8_t) 65);
 
     nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myInt, myString});
 
