@@ -15,33 +15,13 @@ int main() {
 
     nbt n(path, mode);
 
-    nbt::COMPOUND root;
-    root.name = "root";
+    nbt::NbtData myInt(nbt::NbtType::INT, "myInt", 10);
+    nbt::NbtData myString(nbt::NbtType::STRING, "myString", "Hello World");
 
-    nbt::INT myInt;
-    myInt.name = "MyIntName";
-    myInt.payload = 1337;
-
-    nbt::COMPOUND sCompound;
-    sCompound.name = "sCompound";
-    sCompound.payload.push_back(myInt);
-
-    root.payload.push_back(myInt);
-    root.payload.push_back(sCompound);
-
-    std::list<char> buffer;
-    // buffer.push_back(0x0a);
-    // buffer.push_back(0x00);
-    // buffer.push_back(0x00);
+    nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myInt, myString});
 
 
-    buffer = n.nbtDataToWritableArray(root);
-
-    // buffer.push_back(0x00);
-
-    n.writeNBT(buffer);
-
-    //getch();
+    getch();
     return 0;
 
 }
