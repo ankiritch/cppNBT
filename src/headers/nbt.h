@@ -68,8 +68,6 @@ class nbt {
         std::list<char> buffer;
 
         void pushNumber(auto payload, std::list<char> &buffer);
-
-
 };
 
 #endif
