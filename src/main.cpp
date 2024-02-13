@@ -16,10 +16,11 @@ int main() {
     nbt n(path, mode);
 
     nbt::NbtData myInt(nbt::NbtType::INT, "myInt", 10);
-    nbt::NbtData myString(nbt::NbtType::STRING, "myString", "Hello World");
-    nbt::NbtData myByte(nbt::NbtType::BYTE, "myByte", (int8_t) 65);
+    nbt::NbtData myOtherInt(nbt::NbtType::INT, "myOtherInt", 20);
 
-    nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myInt, myString});
+    nbt::NbtData myString(nbt::NbtType::STRING, "myString", "Hello World");
+
+    nbt::NbtData myList(nbt::NbtType::LIST, "myList", std::list<nbt::NbtData>{myInt, myOtherInt}, nbt::NbtType::INT);
 
 
     getch();

@@ -40,11 +40,9 @@ class nbt {
         struct Payload {
             //enum PayloadGroup{Single, Multi} group{};
             NbtPayloadTypes value;
-            NbtType listType{NbtType::NONE}; //only when type is LIST is it not NONE
 
-            Payload();
-            Payload(NbtPayloadTypes valueArg);
-            Payload(NbtPayloadTypes valueArg, NbtType listTypeArg);
+            // Payload();
+            // Payload(NbtPayloadTypes valueArg);
         };
 
         struct NbtData {
@@ -53,11 +51,13 @@ class nbt {
             public:
                 NbtType type{};
                 std::string name;
-                Payload payload;
+                //Payload payload;
+                NbtPayloadTypes payload;
+                NbtType listType{NbtType::NONE}; //only when type is LIST is it not NONE
 
-                void setTag(NbtType typeArg);
-                bool isCorrectType(NbtType type, NbtPayloadTypes &valueArg);
-                bool convertToCorrectType(NbtType type, NbtPayloadTypes &valueArg);
+                void setTag();
+                bool isCorrectType();
+                bool convertToCorrectType();
 
                 NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg = NbtType::NONE); 
         };
