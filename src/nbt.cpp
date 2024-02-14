@@ -96,32 +96,20 @@ bool nbt::NbtData::convertToCorrectType() {
                     payload = static_cast<double>(std::get<int>(payload));
                     return true;
                     break;
-                // case NbtType::BYTE_ARRAY:
-                //     payload = static_cast<std::list<int8_t>>(std::get<int>(payload));
-                //     return true;
-                //     break;
-                // case NbtType::STRING:
-                //     payload = static_cast<std::string>(std::get<int>(payload));
-                //     return true;
-                //     break;
-                // case NbtType::LIST:
-                //     payload = static_cast<std::list<NbtData>>(std::get<int>(payload));
-                //     return true;
-                //     break;
-                // case NbtType::COMPOUND:
-                //     payload = static_cast<std::list<NbtData>>(std::get<int>(payload));
-                //     return true;
-                //     break;
-                // case NbtType::INT_ARRAY:
-                //     payload = static_cast<std::list<int32_t>>(std::get<int>(payload));
-                //     return true;
-                //     break;
-                // case NbtType::LONG_ARRAY:
-                //     payload = static_cast<std::list<int64_t>>(std::get<int>(payload));
-                //     return true;
-                //     break;
+                case NbtType::BYTE_ARRAY:
+                    for (auto &element : std::get<std::list<int>>(payload))  {
+                        element = static_cast<int8_t>(element);
+                    }
+                    return true;
+                    break;
+                case NbtType::LONG_ARRAY:
+                    for (auto &element : std::get<std::list<int>>(payload))  {
+                        element = static_cast<int64_t>(element);
+                    }
+                    return true;
+                    break;
                 default:
-                    return false;
+                    return false; //string, list, compound, int_array do not have directly convertible payload
                     break;
             }
         }

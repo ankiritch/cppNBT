@@ -39,11 +39,7 @@ class nbt {
         using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>>;
 
         struct Payload {
-            //enum PayloadGroup{Single, Multi} group{};
             NbtPayloadTypes value;
-
-            // Payload();
-            // Payload(NbtPayloadTypes valueArg);
         };
 
         struct NbtData {
@@ -52,7 +48,6 @@ class nbt {
             public:
                 NbtType type{};
                 std::string name;
-                //Payload payload;
                 NbtPayloadTypes payload;
                 NbtType listType{NbtType::NONE}; //only when type is LIST is it not NONE
 
