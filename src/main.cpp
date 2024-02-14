@@ -15,12 +15,12 @@ int main() {
 
     nbt n(path, mode);
 
-    nbt::NbtData myInt(nbt::NbtType::INT, "myInt", 10);
-    nbt::NbtData myOtherInt(nbt::NbtType::INT, "myOtherInt", 20);
+    nbt::NbtData myInt(nbt::NbtType::LONG, "myInt", 10);
+    nbt::NbtData myOtherInt(nbt::NbtType::LONG, "myOtherInt", 20);
 
     nbt::NbtData myString(nbt::NbtType::STRING, "myString", "Hello World");
 
-    nbt::NbtData myList(nbt::NbtType::LIST, "myList", std::list<nbt::NbtData>{myInt, myOtherInt}, nbt::NbtType::INT);
+    nbt::NbtData myList(nbt::NbtType::LIST, "myList", std::list<nbt::NbtData>{myInt, myOtherInt}, nbt::NbtType::LONG);
 
 
     getch();

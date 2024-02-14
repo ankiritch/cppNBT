@@ -7,6 +7,7 @@
 #include <vector>
 #include <variant>
 #include <cstdint>
+#include <map>
 
 class nbt {
     public:
@@ -35,7 +36,7 @@ class nbt {
 
         struct NbtData;
 
-        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::string, std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>>;
+        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>>;
 
         struct Payload {
             //enum PayloadGroup{Single, Multi} group{};
@@ -58,6 +59,7 @@ class nbt {
                 void setTag();
                 bool isCorrectType();
                 bool convertToCorrectType();
+                bool setPayload(NbtPayloadTypes newPayload);
 
                 NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg = NbtType::NONE); 
         };
@@ -71,91 +73,3 @@ class nbt {
 };
 
 #endif
-
-/* To delete later, previously: nbt, public */
-//All possible data types, contain name, payload, and tag (lists: datatypeTag)
-//use vector later to store data
-
-//Forward declaration to use in NBT_DATATYPES
-// struct BYTE;
-// struct SHORT;
-// struct INT;
-// struct LONG;
-// struct FLOAT;
-// struct DOUBLE;
-// struct BYTE_ARRAY;
-// struct STRING;
-// struct LIST;
-// struct COMPOUND;
-// struct INT_ARRAY;
-// struct LONG_ARRAY;
-
-// using NBT_DATATYPES = std::variant<BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY>;
-// using NBT_SINGLE_PAYLOAD_DATATYPES = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::string>;
-// using NBT_MULTI_PAYLOAD_DATATYPES = std::variant<std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NBT_DATATYPES>>;
-// using NBT_PAYLOAD_DATATYPES = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::list<int32_t>, std::list<int64_t>, std::string, std::list<NBT_DATATYPES>>;
-
-
-// std::list<char> nbtDataToWritableArray(NBT_DATATYPES nbtData);
-
-// struct BYTE {
-//     std::string name;
-//     int8_t payload;
-//     const char TAG{0x01};
-// };
-// struct SHORT {
-//     std::string name;
-//     int16_t payload;
-//     const char TAG{0x02};
-// };
-// struct INT {
-//     std::string name;
-//     int32_t payload;
-//     const char TAG{0x03};
-// };
-// struct LONG {
-//     std::string name;
-//     int64_t payload;
-//     const char TAG{0x04};
-// };
-// struct FLOAT {
-//     std::string name;
-//     float payload;
-//     const char TAG{0x05};
-// };
-// struct DOUBLE {
-//     std::string name;
-//     double payload;
-//     const char TAG{0x06};
-// };
-// struct BYTE_ARRAY {
-//     std::string name;
-//     std::list<int8_t> payload;
-//     const char TAG{0x07};
-// };
-// struct STRING {
-//     std::string name;
-//     std::string payload;
-//     const char TAG{0x08};
-// };
-// struct LIST {
-//     std::string name;
-//     char datatypeTag;
-//     std::list<NBT_DATATYPES> payload;
-//     const char TAG{0x09};
-// };
-// struct COMPOUND {
-//     std::string name;
-//     std::list<NBT_DATATYPES> payload;
-//     const char TAG{0x0a};
-// };
-// struct INT_ARRAY {
-//     std::string name;
-//     std::list<int32_t> payload;
-//     const char TAG{0x0b};
-// };
-// struct LONG_ARRAY {
-//     std::string name;
-//     std::list<int64_t> payload;
-//     const char TAG{0x0c};
-// };
