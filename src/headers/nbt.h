@@ -36,7 +36,7 @@ class nbt {
 
         struct NbtData;
 
-        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>, std::list<NbtData*>>;
+        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>>;
 
         template <typename T>
         struct Payload {
@@ -67,6 +67,8 @@ class nbt {
 
                 NbtPayloadTypes getPayload();
                 NbtPayloadTypes* getPayloadPtr();
+                std::list<NbtData*> getPayloadPtrList();
+                std::list<NbtData*>* getPayloadPtrListPtr();
 
                 NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg = NbtType::NONE); 
                 NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes* valueArg, NbtType listTypeArg = NbtType::NONE); 

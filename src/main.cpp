@@ -24,9 +24,10 @@ int main() {
 
     //nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myString, myList});
 
-    nbt::NbtPayloadTypes newPayload = 50;
 
-    myInt.setPayload("50");
+    myInt.setPayload(20);
+
+    std::cout << (*(myList.getPayloadPtrList().begin()))->name;
 
     getch();
     return 0;

@@ -299,11 +299,30 @@ bool nbt::NbtData::setPayload(NbtPayloadTypes *newPayload) {
 }
 
 nbt::NbtPayloadTypes nbt::NbtData::getPayload() {
-    return *payloadPtr;
+    if (type != NbtType::LIST) {
+        return *payloadPtr;        
+    } else {
+        logToConsole("Unable to get payload from list, returning nullptr");
+        return nullptr;
+    }
 }
 
 nbt::NbtPayloadTypes* nbt::NbtData::getPayloadPtr() {
-    return payloadPtr;
+
+    if (type != NbtType::LIST) {
+        return payloadPtr;
+    } else {
+        logToConsole(name, ": use getListPayloadPtr to get payload from list");
+        return nullptr;
+    }
+}
+
+std::list<nbt::NbtData*> nbt::NbtData::getPayloadPtrList() {
+    return payloadPtrList;
+}
+
+std::list<nbt::NbtData*>* nbt::NbtData::getPayloadPtrListPtr() {
+    return &payloadPtrList;
 }
 
 nbt::nbt(std::string path, std::ios::openmode mode) {
