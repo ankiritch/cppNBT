@@ -8,10 +8,15 @@
 #include <typeinfo>
 #include <any>
 
+void logToConsole(std::string m1, std::string m2="") {
+    std::cout <<"[NBT]: "<< m1 + " " + m2 << std::endl;
+}
+
 nbt::NbtData::NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg) {
     type = typeArg;
     name = nameArg;
     payload = valueArg;
+    payloadPtr = &payload;
 
     if (type == NbtType::LIST) {
         listType = listTypeArg;
@@ -22,6 +27,46 @@ nbt::NbtData::NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valu
     }
 
     setTag();
+}
+
+nbt::NbtData::NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes *valueArg, NbtType listTypeArg) {
+    type = typeArg;
+    name = nameArg;
+    payloadPtr = valueArg;
+
+    if (type == NbtType::LIST) {
+        listType = listTypeArg;
+    }
+
+    if (!isCorrectType()) {
+        throw std::runtime_error("Invalid type");
+    }
+
+    setTag();
+}
+
+nbt::NbtData::NbtData(NbtType typeArg, std::string nameArg, std::list<NbtData> valueArg, std::list<NbtData*> valuePtrArg, NbtType listTypeArg) {
+    type = typeArg;
+    name = nameArg;
+    payload = valueArg;
+    payloadPtr = nullptr;
+
+    //Push all pointers to payload to list
+    for (NbtData element : std::get<std::list<NbtData>>(payload)) {
+        payloadPtrList.push_back(&element);
+    }
+    //Push all pointers to outside to list
+    for (NbtData* element : valuePtrArg) {
+        payloadPtrList.push_back(element);
+    }
+
+    if (type == NbtType::LIST) {
+        listType = listTypeArg;
+    }
+
+    if (!isCorrectType()) {
+        throw std::runtime_error("Invalid type");
+    }
 }
 
 void nbt::NbtData::setTag() {
@@ -69,42 +114,48 @@ void nbt::NbtData::setTag() {
     }
 }
 
-bool nbt::NbtData::convertToCorrectType() {
+bool nbt::NbtData::intToCorrectType() {
+    NbtPayloadTypes* currentPayloadPtr;
+    std::list<int8_t> tempByteArray;
+    std::list<int64_t> tempLongArray;
     try {
             switch (type) {
                 case NbtType::BYTE:
-                    payload = static_cast<int8_t>(std::get<int>(payload));
+                    setPayload(static_cast<int8_t>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::SHORT:
-                    payload = static_cast<int16_t>(std::get<int>(payload));
+                    setPayload(static_cast<int16_t>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::INT:
-                    payload = static_cast<int32_t>(std::get<int>(payload));
+                    setPayload(static_cast<int32_t>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::LONG:
-                    payload = static_cast<int64_t>(std::get<int>(payload));
+                    setPayload(static_cast<int64_t>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::FLOAT:
-                    payload = static_cast<float>(std::get<int>(payload));
+                    setPayload(static_cast<float>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::DOUBLE:
-                    payload = static_cast<double>(std::get<int>(payload));
+                    setPayload(static_cast<double>(std::get<int>(getPayload())));
                     return true;
                     break;
                 case NbtType::BYTE_ARRAY:
-                    for (auto &element : std::get<std::list<int>>(payload))  {
-                        element = static_cast<int8_t>(element);
+                    currentPayloadPtr = getPayloadPtr();
+                    for (int element : std::get<std::list<int>>(*currentPayloadPtr)) {
+                        tempByteArray.push_back(static_cast<int8_t>(element));
                     }
+                    *currentPayloadPtr = tempByteArray;
                     return true;
                     break;
                 case NbtType::LONG_ARRAY:
-                    for (auto &element : std::get<std::list<int>>(payload))  {
-                        element = static_cast<int64_t>(element);
+                    currentPayloadPtr = getPayloadPtr();
+                    for (int element : std::get<std::list<int>>(*currentPayloadPtr))  {
+                        tempLongArray.push_back(static_cast<int64_t>(element));
                     }
                     return true;
                     break;
@@ -120,75 +171,85 @@ bool nbt::NbtData::convertToCorrectType() {
 
 
 bool nbt::NbtData::isCorrectType() {
+    std::list<NbtData*> currentPayloadPtrList;
+    if (type == NbtType::LIST) {
+        try {
+            currentPayloadPtrList = payloadPtrList;
+        }
+        catch (...) {
+            logToConsole("Failed to get payloadPtrList");
+            return false;
+        }
+    }
+
     switch (type) {
         case NbtType::BYTE:
-            if (std::holds_alternative<int8_t>(payload)) {
+            if (std::holds_alternative<int8_t>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::SHORT:
-            if (std::holds_alternative<int16_t>(payload)) {
+            if (std::holds_alternative<int16_t>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::INT:
-            if (std::holds_alternative<int32_t>(payload)) {
+            if (std::holds_alternative<int32_t>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::LONG:
-            if (std::holds_alternative<int64_t>(payload)) {
+            if (std::holds_alternative<int64_t>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::FLOAT:
-            if (std::holds_alternative<float>(payload)) {
+            if (std::holds_alternative<float>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::DOUBLE:
-            if (std::holds_alternative<double>(payload)) {
+            if (std::holds_alternative<double>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::BYTE_ARRAY:
-            if (std::holds_alternative<std::list<int8_t>>(payload)) {
+            if (std::holds_alternative<std::list<int8_t>>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::STRING:
-            if (std::holds_alternative<std::string>(payload)) {
+            if (std::holds_alternative<std::string>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::LIST:
-        //check if all NbtData is of correct type, if not convert, if not convertable return false
-            if (std::holds_alternative<std::list<NbtData>>(payload)) { 
-                for (NbtData &element : std::get<std::list<NbtData>>(payload)) {
-                    if (listType != element.type) {
-                        throw std::runtime_error("List contains invalid type");
-                    }
-                    if ((!element.isCorrectType())) {
-                        if (!element.convertToCorrectType()) {
-                            return false;
-                        }
-                    }
+            for (NbtData* elementPtr : currentPayloadPtrList) {
+                NbtData element = *elementPtr;
+                if (listType != element.type) {
+                    throw std::runtime_error("List contains invalid type");
                 }
-                return true;
+                if ((!element.isCorrectType())) {
+                        logToConsole(std::string(element.name) + " element in list conversion failed.");
+                        return false;
+                }
+
+                *elementPtr = element;
             }
+            return true;
             break;
         case NbtType::COMPOUND:
-            if (std::holds_alternative<std::list<NbtData>>(payload)) {
+            if (std::holds_alternative<std::list<NbtData>>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::INT_ARRAY:
-            if (std::holds_alternative<std::list<int32_t>>(payload)) {
+            if (std::holds_alternative<std::list<int32_t>>(getPayload())) {
                 return true;
             }
             break;
         case NbtType::LONG_ARRAY:
-            if (std::holds_alternative<std::list<int64_t>>(payload)) {
+            if (std::holds_alternative<std::list<int64_t>>(getPayload())) {
                 return true;
             }
             break;
@@ -196,19 +257,53 @@ bool nbt::NbtData::isCorrectType() {
             return false;
             break;
     }
-    if (convertToCorrectType()) { //if not list try converting
-        std::cout << name << " type converted.\n";
+    if (intToCorrectType()) { //if not list try converting
+        logToConsole(name, "type converted.");
         return true;
     }
     else {
-        std:: cout << name << " conversion failed.\n";
+        logToConsole(name, "conversion failed.");
         return false;
     }
 };
 
 bool nbt::NbtData::setPayload(NbtPayloadTypes newPayload) {
+    NbtPayloadTypes oldPayload{payload};
+    NbtPayloadTypes* oldPayloadPtr{payloadPtr};
+
+    //set local, point to it
     payload = newPayload;
+    payloadPtr = &payload;
+
+    if (!isCorrectType()) {
+        payload = oldPayload;
+        payloadPtr = oldPayloadPtr;
+        logToConsole(name , "attempted to set invalid type.");
+    }
+
     return true;
+}
+
+bool nbt::NbtData::setPayload(NbtPayloadTypes *newPayload) {
+    NbtPayloadTypes* oldPayloadPtr{payloadPtr};
+
+    //point to original
+    payloadPtr = newPayload;
+
+    if (!isCorrectType()) {
+        payloadPtr = oldPayloadPtr;
+        logToConsole(name, "attempted to set invalid type.");
+    }
+
+    return true;
+}
+
+nbt::NbtPayloadTypes nbt::NbtData::getPayload() {
+    return *payloadPtr;
+}
+
+nbt::NbtPayloadTypes* nbt::NbtData::getPayloadPtr() {
+    return payloadPtr;
 }
 
 nbt::nbt(std::string path, std::ios::openmode mode) {
@@ -235,3 +330,4 @@ void nbt::pushNumber(auto payload, std::list<char> &buffer) {
 void nbt::setBuffer(std::list<char> newBuffer) {
     buffer = newBuffer;
 }
+

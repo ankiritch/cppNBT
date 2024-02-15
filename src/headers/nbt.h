@@ -36,27 +36,42 @@ class nbt {
 
         struct NbtData;
 
-        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>>;
+        using NbtPayloadTypes = std::variant<int8_t, int16_t, int32_t, int64_t, float, double, std::list<int8_t>, std::string, std::list<int32_t>, std::list<int64_t>, std::list<std::string>, std::list<NbtData>, std::list<NbtData*>>;
 
+        template <typename T>
         struct Payload {
-            NbtPayloadTypes value;
+            T value;
         };
 
+        //template <typename T>
         struct NbtData {
             private:
                 char tag;
+                NbtPayloadTypes payload;
+                NbtPayloadTypes* payloadPtr;
+
+                //used only when type is LIST
+                std::list<NbtData*> payloadPtrList;
+                NbtType listType{NbtType::NONE};
             public:
                 NbtType type{};
                 std::string name;
-                NbtPayloadTypes payload;
-                NbtType listType{NbtType::NONE}; //only when type is LIST is it not NONE
 
                 void setTag();
+
                 bool isCorrectType();
-                bool convertToCorrectType();
+                bool intToCorrectType();
+
                 bool setPayload(NbtPayloadTypes newPayload);
+                bool setPayload(NbtPayloadTypes* newPayload);
+
+                NbtPayloadTypes getPayload();
+                NbtPayloadTypes* getPayloadPtr();
 
                 NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes valueArg, NbtType listTypeArg = NbtType::NONE); 
+                NbtData(NbtType typeArg, std::string nameArg, NbtPayloadTypes* valueArg, NbtType listTypeArg = NbtType::NONE); 
+
+                NbtData(NbtType typeArg, std::string nameArg, std::list<NbtData> valueArg, std::list<NbtData*> valuePtrArg, NbtType listTypeArg = NbtType::NONE);
         };
 
 
