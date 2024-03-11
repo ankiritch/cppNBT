@@ -24,7 +24,7 @@ int main() {
 
     nbt::NbtData myList(nbt::NbtType::LIST, "myList", std::list<nbt::NbtData>{myInt, myOtherInt}, nbt::NbtType::INT); //std::list<nbt::NbtData>{nbt::NbtData(nbt::NbtType::INT, "moreInt", 30)}, 
 
-    nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myString, myInt, myList});
+    nbt::NbtData myCompound(nbt::NbtType::COMPOUND, "myCompound", std::list<nbt::NbtData>{myString, myInt, myOtherInt, myList});
 
 
     myInt.setPayload(20);
@@ -35,9 +35,15 @@ int main() {
     // n.writeNBT();
 
     std::list<int8_t> testBuffer{};
-    n.pushData<int8_t>(25, testBuffer);
+    //n.pushData<int64_t>(25, testBuffer);
 
-    getch();
+    testBuffer = n.nbtToCharList(myCompound);
+
+    n.setBuffer(testBuffer);
+
+    n.writeNBT();
+
+    //getch();
     return 0;
 
 }

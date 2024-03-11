@@ -342,21 +342,39 @@ nbt::nbt(std::string path, std::ios::openmode mode) {
 }
 
 void nbt::writeNBT() {
+    std::cout << "Writing NBT file" << std::endl;
     for (char c : buffer) {
         outfile << c;
     }
 }
 
-template <typename T>
-void nbt::pushData(T data, std::list<int8_t> &buffer) {
+template<>
+void nbt::pushData<float>(float data, std::list<int8_t> &buffer) {
+    buffer.push_back(1);
+    std::cout << data << std::endl;
+    return;
+}
 
-    for (int i = (sizeof(payload)-1); i >= 0; i--) {
+template <>
+void nbt::pushData<double>(double data, std::list<int8_t> &buffer) {
+    buffer.push_back(1);
+    std::cout << data << std::endl;
+    return;
+}
+
+template <>
+void nbt::pushData<std::string>(std::string data, std::list<int8_t> &buffer) {
+    return pushString(data, buffer);
+}
+
+template<typename T>
+void nbt::pushData(T data, std::list<int8_t> &buffer) {
+    for (int i = (sizeof(data)-1); i >= 0; i--) {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wconversion"
-        buffer.push_back((payload >> 8*i) & 0xFF);
+        buffer.push_back((data >> 8*i) & 0xFF);
         #pragma GCC diagnostic pop
     }
-
     return;
 }
 
